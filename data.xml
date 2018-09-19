@@ -14,23 +14,29 @@
 </developers>
 
 
-<developer>
+<chef>
 	<name>4</name>
 	<dateStart>DATE</dateStart>
-</developers>
-
-<developer>
-	<name>5</name>
-	<dateStart>DATE</dateStart>
-</developers>
+</chef>
 
 
 <project>
 	<name>Airbus</name>
-	<cost>500</cost>
+	<dev>150</dev>
+	<gest>40</gest>
+	<date>date</date>
 </project>
 
 <project>
 	<name>Ninetendo</name>
-	<cost>500</cost>
+	<dev>75</dev>
+	<gest>25</gest>
+	<date>date</date>
+</project>
+
+<project>
+	<name>HTCVR</name>
+	<dev>150</dev>
+	<gest>45</gest>
+	<date>date</date>
 </project>
