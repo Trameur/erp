@@ -1,0 +1,36 @@
+<developer>
+	<name>1</name>
+	<dateStart>DATE</dateStart>
+</developers>
+
+<developer>
+	<name>2</name>
+	<dateStart>DATE</dateStart>
+</developers>
+
+<developer>
+	<name>3</name>
+	<dateStart>DATE</dateStart>
+</developers>
+
+
+<developer>
+	<name>4</name>
+	<dateStart>DATE</dateStart>
+</developers>
+
+<developer>
+	<name>5</name>
+	<dateStart>DATE</dateStart>
+</developers>
+
+
+<project>
+	<name>Airbus</name>
+	<cost>500</cost>
+</project>
+
+<project>
+	<name>Ninetendo</name>
+	<cost>500</cost>
+</project>
