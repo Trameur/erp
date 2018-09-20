@@ -1,0 +1,15 @@
+Exemple (airbus):
+
+TotalHeureDefini : 150h pour les devs
+-> TotalHeureDev = 150/nb_dev
+on enregistre la date de fin de dev
+
+TotalHeureGestion : 40h pour les chefs
+-> TotalHeureChef = 40/nb_chef
+on enregistre la date de fin de chef
+
+datefinprojet = max (TchTotalHeureChefef, TotalHeureDev) + datepresent
+
+si pas assez, on regarde le temps manquant, on regarde le nombre de jour dans le passé, si c'est avant la date de départ on rajoute un employé
+si c'est après la date de départ on dit qu'il faut X employés en plus a partir de cette date
+

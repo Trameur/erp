@@ -11,14 +11,36 @@ class Employee {
         int role; // 0 = dev, 1 = chef
 
         Employee();
+
         Employee(string name, string date, int role)
         {
             this->name = name;
             this->date = date;
             this->role = role;
         }
-        ~Employee();
 
+        ~Employee() { }
+};
+
+class Projet {
+
+    public:
+        string name;
+        string date;
+        int dev;
+        int gestion;
+
+        Projet();
+
+        Projet(string name, string date, int dev, int gestion)
+        {
+            this->name = name;
+            this->date = date;
+            this->dev = dev;
+            this->gestion = gestion;
+        }
+
+        ~Projet() { }
 };
 
 void readConfiguration(char *filename)
@@ -37,8 +59,10 @@ int main (int argc, char *argv[])
 
     readConfiguration(argv[1]);
 
-    //Employee emp1("nom", "15/05/19");
-    
+    Employee emp1("dev", "15/05/19", 0);
+    Employee chef("chef", "15/05/19", 1);
+
+    Projet airbus("airbus", "1/12/19", 150, 40);
     
 
     
