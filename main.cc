@@ -48,6 +48,7 @@ void readConfiguration(char *filename)
     cout << filename << endl;
 }
 
+
 int main (int argc, char *argv[])
 {   
 
@@ -59,13 +60,40 @@ int main (int argc, char *argv[])
 
     readConfiguration(argv[1]);
 
-    Employee emp1("dev", "15/05/19", 0);
-    Employee chef("chef", "15/05/19", 1);
+    Employee emp1("dev", "01/06/19", 0);
+    Employee chef("chef", "01/06/19", 1);
 
-    Projet airbus("airbus", "1/12/19", 150, 40);
-    
+    Projet airbus("airbus", "01/12/19", 150, 40);
 
-    
+    int counter = 0;
+    int days = 0;
+    bool toutFini = false;
+
+    while(!toutFini)
+    {
+        if(days < 5)
+        {
+            if(airbus.dev > 0)
+                airbus.dev--;
+
+            if(airbus.gestion > 0)
+                airbus.gestion--;
+        }
+        
+        days++;
+        if(days > 6)
+            days = 0;
+
+        counter++;
+
+        if(airbus.dev == 0 && airbus.gestion == 0)
+        {
+            toutFini = true;
+        }
+    }
+
+    cout << "Nombre de jours : " << counter << endl;
+
 
 
     return 0;
