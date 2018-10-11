@@ -9,16 +9,18 @@ class Employee {
 
     public:
         string name;
-        string date;
+        int jour, mois, annee;
         int role; // 0 = dev, 1 = chef
 
         Employee();
 
-        Employee(string name, string date, int role)
+        Employee(string name, int role, int jour, int mois, int annee)
         {
             this->name = name;
-            this->date = date;
             this->role = role;
+            this->jour = jour;
+            this->mois = mois;
+            this->annee = annee;
         }
 
         ~Employee() { }
@@ -31,6 +33,8 @@ class Projet {
         int jour, mois, annee;
         int dev;
         int gestion;
+        int jourFinDev, moisFinDev, anneeFinDev;
+        int jourFinChef, moisFinChef, anneeFinChef;
 
         Projet();
 
@@ -45,6 +49,17 @@ class Projet {
         }
 
         ~Projet() { }
+
+        bool NotOverlapDev()
+        {
+            return (jour < jourFinDev && mois < moisFinDev && annee < anneeFinDev); 
+        }
+
+        bool NotOverlapChef()
+        {
+            return (jour < jourFinChef && mois < moisFinChef && annee < anneeFinChef); 
+        }
+
 };
 
 vector<Employee> parseEmployee(string path){
@@ -52,7 +67,7 @@ vector<Employee> parseEmployee(string path){
    string name;
    string date;
    int role;
-
+   int jour,mois, annee;       
    int dev, projet;
 
    if(!fichier.eof())
@@ -63,10 +78,10 @@ vector<Employee> parseEmployee(string path){
    for(int i=0; i < dev; i++){
 
        if(!fichier.eof())
-           fichier >> name >> date >> role;
+           fichier >> name >> jour  >> mois >> annee >> role;
 
-       Employee emp(name, date, role);
-       cout << emp.name << emp.date << emp.role << endl;
+       Employee emp(name, role, jour, mois, annee);
+       cout << emp.name << emp.role << endl;
 
        tabEmp.push_back(emp);
 
@@ -127,7 +142,19 @@ void datePlusDays(struct tm* date, int days)
 
     // Update caller's date
     // Use localtime because mktime converts to UTC so may change date
-    *date = *localtime( &date_seconds ) ; ;
+    *date = *localtime( &date_seconds ) ;
+}
+
+struct tm& getDate(struct tm& date, int jour, int mois, int annee)
+{
+
+    date.tm_year = annee - 1900;
+    date.tm_mon = mois - 1;
+    date.tm_mday = jour;
+
+    datePlusDays(&date,0);
+
+    return date;
 }
 
 int main (int argc, char *argv[])
@@ -148,6 +175,20 @@ int main (int argc, char *argv[])
     bool toutFini = false;
     int projetDev = 0;
     int projetChef = 0;
+    
+    struct tm date = { 0 , 0 , 18 } ;
+    struct tm dateTemp = { 0 , 0 , 18 } ;
+    int year = 2018;
+    int month = 6;
+    int day = 1;
+
+    date.tm_year = year - 1900;
+    date.tm_mon = month - 1;
+    date.tm_mday = day;
+
+    dateTemp.tm_year = year - 1900;
+    dateTemp.tm_mon = month - 1;
+    dateTemp.tm_mday = day;
 
     while(!toutFini)
     {
@@ -165,6 +206,9 @@ int main (int argc, char *argv[])
               }
               else if(allProjects.size() > projetDev)
               {
+                allProjects[projetDev].jourFinDev = date.tm_mday;
+                allProjects[projetDev].moisFinDev = date.tm_mon + 1;
+                allProjects[projetDev].anneeFinDev = date.tm_year + 1900;
                 allProjects[++projetDev].dev--;
               }
             }
@@ -176,6 +220,9 @@ int main (int argc, char *argv[])
               }
               else if(allProjects.size() > projetChef)
               {
+                allProjects[projetChef].jourFinChef = date.tm_mday;
+                allProjects[projetChef].moisFinChef = date.tm_mon + 1;
+                allProjects[projetChef].anneeFinChef = date.tm_year + 1900;
                 allProjects[++projetChef].gestion--;
               }
             }
@@ -191,21 +238,30 @@ int main (int argc, char *argv[])
             toutFini = true;
         }
         else
+        {
             counter++;
+            datePlusDays(&date, 1);
+        }
+            
     }
 
+    for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
+    {
+        if(!it->NotOverlapDev())
+        {
+            cout << "Le projet " << it->name << " devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << " et les chefs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+        }
+        if(!it->NotOverlapChef())
+        {
+
+        }
+    }
+
+
     cout << "Nombre de jours : " << counter << endl;
-    struct tm date = { 0 , 0 , 18 } ;
-    int year = 2018;
-    int month = 6;
-    int day = 1;
-
-    date.tm_year = year - 1900;
-    date.tm_mon = month - 1;
-    date.tm_mday = day;
-
-    datePlusDays(&date, counter);
-
     cout << "Fin prévue : " << asctime(&date) << endl;
 
 
