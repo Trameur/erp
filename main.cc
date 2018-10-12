@@ -51,7 +51,7 @@ class Projet {
 
         Projet();
 
-        Projet(string name, int dev, int gestion, int jour, int mois, int annee)
+        Projet(string name, int dev, int gestion, int jour, int mois, int annee, float multiplicateur)
         {
             this->name = name;
             this->dev = dev;
@@ -62,6 +62,8 @@ class Projet {
 
             this->devBase = dev;
             this->gestionBase = gestion;
+
+            this->multiplicateur = multiplicateur;
         }
 
         ~Projet() { }
@@ -103,7 +105,6 @@ vector<Employee> parseEmployee(string path){
            fichier >> name >> jour  >> mois >> annee >> role;
 
        Employee emp(name, role, jour, mois, annee);
-       cout << emp.name << emp.role << endl;
 
        tabEmp.push_back(emp);
 
@@ -114,7 +115,7 @@ vector<Employee> parseEmployee(string path){
 
 }
 
-vector<Projet> parseProject(string path){
+vector<Projet> parseProject(string path, float multiplicateur){
    ifstream fichier(path);
 
    string name;
@@ -143,8 +144,7 @@ vector<Projet> parseProject(string path){
        if(!fichier.eof())
            fichier >> name >> dev >> gestion >> jour  >> mois >> annee;
 
-       tabProjet.push_back(Projet(name, dev, gestion, jour, mois, annee));
-       cout << name << endl;
+       tabProjet.push_back(Projet(name, dev, gestion, jour, mois, annee, multiplicateur));
    }
 
 
@@ -182,15 +182,15 @@ struct tm& getDate(struct tm& date, int jour, int mois, int annee)
 int main (int argc, char *argv[])
 {
 
-    if(argc < 2)
+    if(argc < 3)
     {
-        cout << "Error usage " << argv[0] << " [filename]" << endl;
+        cout << "Error usage " << argv[0] << " [filename] [multiplicateur]" << endl;
         return 1;
     }
 
     vector<Employee> allEmployees = parseEmployee(argv[1]);
 
-    vector<Projet> allProjects = parseProject(argv[1]);
+    vector<Projet> allProjects = parseProject(argv[1], atof(argv[2]));
 
     bool recrutementDev = false;
     bool recrutementChef = false;
@@ -210,6 +210,8 @@ int main (int argc, char *argv[])
     int year = 2018;
     int month = 6;
     int day = 1;
+    int nbDev = 0;
+    int nbChef = 0;
 
 
     date.tm_year = year - 1900;
@@ -238,6 +240,8 @@ int main (int argc, char *argv[])
         dateTemp.tm_year = year - 1900;
         dateTemp.tm_mon = month - 1;
         dateTemp.tm_mday = day;
+        nbDev = 0;
+        nbChef = 0;
 
         if(recrutementDev)
         {
@@ -253,9 +257,27 @@ int main (int argc, char *argv[])
         recrutementDev = false;
         recrutementChef = false;
 
-        
-        cout << "\t ===================== Parametres de la simulation =================" << endl;
-        cout << "\t\t Nombre employes : " << allEmployees.size() <<  endl;
+        for(auto it = allEmployees.begin(); it != allEmployees.end() ; it++)
+        {
+            if(it->role == 0)
+            {
+                nbDev++;
+            }
+            else
+            {
+                nbChef++;
+            }
+        }
+
+
+        cout << "\t ===================== Parametres de la simulation =================" << endl << endl;
+        cout << "\t\t Nombre de dev : " << nbDev <<  endl;
+        cout << "\t\t Nombre de chef : " << nbChef <<  endl << endl;
+        for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
+        {
+            cout << "\t\t Nom du projet : " << it->name << endl;
+            cout << "\t\t Multiplicateur : " << it->multiplicateur << endl << endl;
+        }
         cout << "\t ===================================================================" << endl << endl;
 
         while(!toutFini)
