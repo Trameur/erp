@@ -176,8 +176,8 @@ int main (int argc, char *argv[])
     int projetDev = 0;
     int projetChef = 0;
     
-    struct tm date = { 0 , 0 , 18 } ;
-    struct tm dateTemp = { 0 , 0 , 18 } ;
+    struct tm date = { 0 , 0 , 8 } ;
+    struct tm dateTemp = { 0 , 0 , 8 } ;
     int year = 2018;
     int month = 6;
     int day = 1;
@@ -247,16 +247,33 @@ int main (int argc, char *argv[])
 
     for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
     {
-        if(!it->NotOverlapDev())
+        if(!it->NotOverlapDev() && !it->NotOverlapChef())
         {
-            cout << "Le projet " << it->name << " devait finir le " 
+            cout << "Le projet " << it->name << " est dans les temps, il devait finir le " 
             << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
             << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << " et les chefs ont fini le "
             << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
         }
-        if(!it->NotOverlapChef())
+        else if(it->NotOverlapDev() && it->NotOverlapChef())
         {
-
+            cout << "Le projet " << it->name << " est en retard, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  et les chefs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+        }
+        else if(it->NotOverlapChef())
+        {
+            cout << "Le projet " << it->name << " est en retard, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  mais les chefs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+        }
+        else if(it->NotOverlapDev())
+        {
+            cout << "Le projet " << it->name << " est en retard, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  et les chefs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
         }
     }
 
