@@ -179,6 +179,50 @@ struct tm& getDate(struct tm& date, int jour, int mois, int annee)
     return date;
 }
 
+void displayInfo(vector<Projet> allProjects, struct tm dateTemp, int counter, struct tm date)
+{
+    for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
+    {
+        if(!it->NotOverlapDev() && !it->NotOverlapChef())
+        {
+            cout << "Le projet " << it->name << " est dans les temps, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << " et les chefs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+            
+        }
+        else if(it->NotOverlapDev() && it->NotOverlapChef())
+        {
+
+            cout << "Le projet " << it->name << " est en retard, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  et les chefs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+            
+        }
+        else if(it->NotOverlapChef())
+        {
+        
+            cout << "Le projet " << it->name << " est en retard, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  mais les chefs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+    
+            
+        }
+        else if(it->NotOverlapDev())
+        {
+        
+            cout << "Le projet " << it->name << " est en retard, il devait finir le " 
+            << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini en retard le "
+            << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  et les chefs ont fini le "
+            << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+        }
+    }
+    cout << "Nombre de jours : " << counter << endl;
+    cout << "Fin prévue : " << asctime(&date) << endl;      
+}
+
 int main (int argc, char *argv[])
 {
 
@@ -221,7 +265,7 @@ int main (int argc, char *argv[])
     dateTemp.tm_year = year - 1900;
     dateTemp.tm_mon = month - 1;
     dateTemp.tm_mday = day;
-
+    bool firstInit = true;
     while(simulation)
     {       
         counter = 0;
@@ -269,16 +313,19 @@ int main (int argc, char *argv[])
             }
         }
 
-
-        cout << "\t ===================== Parametres de la simulation =================" << endl << endl;
-        cout << "\t\t Nombre de dev : " << nbDev <<  endl;
-        cout << "\t\t Nombre de chef : " << nbChef <<  endl << endl;
-        for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
+        if(firstInit)
         {
-            cout << "\t\t Nom du projet : " << it->name << endl;
-            cout << "\t\t Multiplicateur : " << it->multiplicateur << endl << endl;
+            cout << "\t Situation initiale : " << endl;
+            cout << "\t ===================== Parametres de la simulation =================" << endl << endl;
+            cout << "\t\t Nombre de dev : " << nbDev <<  endl;
+            cout << "\t\t Nombre de chef : " << nbChef <<  endl << endl;
+            for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
+            {
+                cout << "\t\t Nom du projet : " << it->name << endl;
+                cout << "\t\t Multiplicateur : " << it->multiplicateur << endl << endl;
+            }
+            cout << "\t ===================================================================" << endl << endl;
         }
-        cout << "\t ===================================================================" << endl << endl;
 
         while(!toutFini)
         {
@@ -348,22 +395,13 @@ int main (int argc, char *argv[])
                 datePlusDays(&date, 1);
             }
                 
-        }
-    
+        }     
         for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
         {
             it->gestion = it->gestionBase;
             it->dev = it->devBase;
-            if(!it->NotOverlapDev() && !it->NotOverlapChef())
-            {
-                cout << "Le projet " << it->name << " est dans les temps, il devait finir le " 
-                << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
-                << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << " et les chefs ont fini le "
-                << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
 
-
-            }
-            else if(it->NotOverlapDev() && it->NotOverlapChef())
+            if(it->NotOverlapDev() && it->NotOverlapChef())
             {
                 if(it->multiplicateur < 1.2)
                 {
@@ -375,20 +413,11 @@ int main (int argc, char *argv[])
                     recrutementDev = true;
                     recrutementChef = true;
                 }
-                
-                cout << "Le projet " << it->name << " est en retard, il devait finir le " 
-                << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini en retard le "
-                << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  et les chefs ont fini en retard le "
-                << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
-
                 simulation = true;
             }
             else if(it->NotOverlapChef())
             {
-                cout << "Le projet " << it->name << " est en retard, il devait finir le " 
-                << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini le "
-                << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  mais les chefs ont fini en retard le "
-                << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
+                
 
                 if(it->multiplicateur < 1.2)
                 {
@@ -404,11 +433,6 @@ int main (int argc, char *argv[])
             }
             else if(it->NotOverlapDev())
             {
-                cout << "Le projet " << it->name << " est en retard, il devait finir le " 
-                << asctime(&getDate(dateTemp, it->jour, it->mois, it->annee)) << ", les devs ont fini en retard le "
-                << asctime(&getDate(dateTemp, it->jourFinDev, it->moisFinDev, it->anneeFinDev)) << "  et les chefs ont fini le "
-                << asctime(&getDate(dateTemp, it->jourFinChef, it->moisFinChef, it->anneeFinChef)) << endl;
-
                 if(it->multiplicateur < 1.2)
                 {
                     it->multiplicateur += 0.05;
@@ -423,13 +447,26 @@ int main (int argc, char *argv[])
                 simulation = true;
             }
         }
-
-        cout << "Nombre de jours : " << counter << endl;
-        cout << "Fin prévue : " << asctime(&date) << endl;
+        if(firstInit)
+        {
+            displayInfo(allProjects,dateTemp, counter, date);
+            firstInit = false;
+        }
 
     }
+    cout << "\t Solution retenue : " << endl;
+    cout << "\t ===================== Parametres de la simulation =================" << endl << endl;
+    cout << "\t\t Nombre de dev : " << nbDev <<  endl;
+    cout << "\t\t Nombre de chef : " << nbChef <<  endl << endl;
+    for(auto it = allProjects.begin(); it != allProjects.end() ; it++)
+    {
+        cout << "\t\t Nom du projet : " << it->name << endl;
+        cout << "\t\t Multiplicateur : " << it->multiplicateur << endl << endl;
+    }
+    cout << "\t ===================================================================" << endl << endl;
+    firstInit = false;
 
-
+    displayInfo(allProjects,dateTemp, counter, date);
 
     return 0;
 }
